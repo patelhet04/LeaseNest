@@ -22,8 +22,8 @@ public class ProductDto {
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
     private BigDecimal price;
 
-    @Min(value = 0, message = "Available units cannot be negative")
-    private int availableUnits;
+//    @Min(value = 0, message = "Available units cannot be negative")
+//    private int availableUnits;
 
     @NotBlank(message = "Category is required")
     private String category;

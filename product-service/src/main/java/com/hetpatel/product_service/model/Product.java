@@ -35,8 +35,8 @@ public class Product {
     @NotNull(message = "Price is required")
     private BigDecimal price;
 
-    @Min(value = 0, message = "Available units cannot be negative")
-    private int availableUnits;
+//    @Min(value = 0, message = "Available units cannot be negative")
+//    private int availableUnits;
 
     private String category;
 
