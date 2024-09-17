@@ -2,6 +2,7 @@ package com.hetpatel.order_service.service;
 
 import com.hetpatel.order_service.exception.ResourceNotFoundException;
 import com.hetpatel.order_service.model.Order;
+import com.hetpatel.order_service.model.OrderStatus;
 import com.hetpatel.order_service.repo.OrderRepo;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class OrderService {
     public Order createOrder(Order order) {
         try{
             log.info("Creating new order");
+            order.setStatus(OrderStatus.CREATED);
             return orderRepo.save(order);
         }
         catch(DataException e){

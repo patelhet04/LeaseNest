@@ -30,6 +30,7 @@ public class Order {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
 }

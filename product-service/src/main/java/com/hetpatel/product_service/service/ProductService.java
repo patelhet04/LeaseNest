@@ -3,14 +3,18 @@ package com.hetpatel.product_service.service;
 import com.hetpatel.product_service.dto.ProductDto;
 import com.hetpatel.product_service.exception.ResourceNotFoundException;
 import com.hetpatel.product_service.mapper.ProductMapper;
+import com.hetpatel.product_service.model.LeaseStatus;
 import com.hetpatel.product_service.model.Product;
 import com.hetpatel.product_service.repo.ProductRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.DataException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,55 +26,78 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    public List<Product> getAllProducts(){
-        try{
+    public List<ProductDto> getAllProducts() {
+        try {
             log.info("Getting all products");
-            return productRepo.findAll();
-        } catch (DataException e) {
+            List<Product> products = productRepo.findAll();
+            // Convert the list of Product entities to ProductDto
+            List<ProductDto> productDtos = products.stream()
+                    .map(productMapper::toDto)
+                    .collect(Collectors.toList());
+            return productDtos;
+        } catch (DataAccessException e) {
             log.error("Error while fetching products from database: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to fetch users");
+            throw new RuntimeException("Failed to fetch products", e);
         }
     }
-    public Product getProduct(Long id){
+
+    public ProductDto getProduct(Long id){
         try {
             log.info("Getting product with id {}", id);
-            return productRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Product with id " + id + " not found"));
-
+           Product product = productRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Product with id " + id + " not found"));
+            return productMapper.toDto(product);
         } catch (DataException e) {
             log.error("Error while fetching product with id: {}:{}", id, e.getMessage(),e);
             throw new RuntimeException("Failed to fetch product with id " + id);
         }
     }
-    public Product addProduct(Product product){
+    public ProductDto addProduct(ProductDto productDto){
         try{
-            log.info("Adding product {}", product);
-            return productRepo.save(product);
+            log.info("Adding product {}", productDto);
+            Product product = productMapper.toEntity(productDto);
+            product.setStatus(LeaseStatus.AVAILABLE);
+            Product savedProduct = productRepo.save(product);
+            return productMapper.toDto(savedProduct);
         }catch(DataException e){
             log.error("Error while adding product",e);
             throw new RuntimeException("Failed to add product");
         }
     }
 
-    public Product updateProduct(ProductDto productDto){
+    public ProductDto updateProduct(ProductDto productDto, Long id){
         try{
-            log.info("Updating product with id: {}", productDto.getId());
-            Product product = productRepo.findById(productDto.getId())
-                    .orElseThrow(()-> new ResourceNotFoundException("Product with id " + productDto.getId() + " not found"));
+            log.info("Updating product with id: {}", id);
+            Product product = productRepo.findById(id)
+                    .orElseThrow(()-> new ResourceNotFoundException("Product with id " + id + " not found"));
             productMapper.updateProductFromDto(productDto, product);
-            return productRepo.save(product);
+            product.setUpdatedAt(LocalDateTime.now());
+
+            Product updatedProduct = productRepo.save(product);
+            return productMapper.toDto(updatedProduct);
         }catch(DataException e){
             log.error("Error while updating product",e);
             throw new RuntimeException("Failed to update product");
         }
     }
 
-    public void deleteProduct(Long id){
-        try{
-            Product product = getProduct(id);
-            productRepo.delete(product);
-        } catch (DataException e) {
-            log.error("Error while fetching product with id: {}:{}", id, e.getMessage(),e);
-            throw new RuntimeException("Failed to fetch product with id " + id);
+    public void deleteProduct(Long id) {
+        try {
+            log.info("Attempting to delete product with ID {}", id);
+            if (!productRepo.existsById(id)) {
+                log.warn("Product with ID {} not found. Cannot delete.", id);
+                throw new ResourceNotFoundException("Product not found with ID " + id);
+            }
+            productRepo.deleteById(id);
+            log.info("Product with ID {} successfully deleted.", id);
+        } catch (DataAccessException e) {
+            log.error("Error while deleting product with ID {}: {}", id, e.getMessage(), e);
+            throw new RuntimeException("Failed to delete product with ID " + id, e);
         }
     }
+
+//    public ProductDto adjustInventory(Long id, int quantity){
+//        log.info("Adjusting inventory with id {}", id);
+//        Product product = productRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Product with id " + id + " not found"));
+//
+//    }
 }

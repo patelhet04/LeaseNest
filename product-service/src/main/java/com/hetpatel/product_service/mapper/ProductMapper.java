@@ -10,5 +10,13 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductMapper {
 
-    void updateProductFromDto(ProductDto productDto,@MappingTarget Product product);
+    // Map ProductDto to Product (for create operations)
+    Product toEntity(ProductDto productDto);
+
+    // Map Product to ProductDto (for read operations)
+    ProductDto toDto(Product product);
+
+    // Update existing Product entity from ProductDto (for update operations)
+    void updateProductFromDto(ProductDto productDto, @MappingTarget Product product);
 }
+
