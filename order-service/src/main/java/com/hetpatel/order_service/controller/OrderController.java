@@ -28,7 +28,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrder(orderDto));
     }
 
-    @GetMapping("/orders")
+    @GetMapping
     public ResponseEntity<List<OrderDto>> getOrders(){
         log.info("Get orders");
         return ResponseEntity.ok(orderService.getOrders());
@@ -40,7 +40,7 @@ public class OrderController {
         return new ResponseEntity<>(orderService.getOrder(orderId), HttpStatus.OK);
     }
 
-    @GetMapping("/orderByStatus/{orderStatus}")
+    @GetMapping("/{orderStatus}")
     public ResponseEntity<List<OrderDto>> getOrdersByStatus(@PathVariable OrderStatus orderStatus){
         log.info("Get Orders by status: {}", orderStatus);
         return ResponseEntity.ok(orderService.getOrdersByStatus(orderStatus));
