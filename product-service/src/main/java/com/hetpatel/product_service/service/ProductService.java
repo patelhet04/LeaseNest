@@ -31,10 +31,8 @@ public class ProductService {
             log.info("Getting all products");
             List<Product> products = productRepo.findAll();
             // Convert the list of Product entities to ProductDto
-            List<ProductDto> productDtos = products.stream()
-                    .map(productMapper::toDto)
-                    .collect(Collectors.toList());
-            return productDtos;
+            return products.stream()
+                    .map(productMapper::toDto).toList();
         } catch (DataAccessException e) {
             log.error("Error while fetching products from database: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to fetch products", e);

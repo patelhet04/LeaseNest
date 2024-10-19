@@ -1,17 +1,15 @@
 package com.hetpatel.order_service.controller;
 
+import com.hetpatel.order_service.dto.OrderDto;
 import com.hetpatel.order_service.model.Order;
+import com.hetpatel.order_service.model.OrderStatus;
 import com.hetpatel.order_service.service.OrderService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -25,14 +23,26 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+    public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
         log.info("Creating order");
-        return ResponseEntity.ok(orderService.createOrder(order));
+        return ResponseEntity.ok(orderService.createOrder(orderDto));
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<List<OrderDto>> getOrders(){
+        log.info("Get orders");
+        return ResponseEntity.ok(orderService.getOrders());
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getOrder(@PathVariable Long orderId){
+    public ResponseEntity<OrderDto> getOrder(@PathVariable Long orderId){
         log.info("Retrieving order");
-        return ResponseEntity.ok(orderService.getOrder(orderId));
+        return new ResponseEntity<>(orderService.getOrder(orderId), HttpStatus.OK);
+    }
+
+    @GetMapping("/orderByStatus/{orderStatus}")
+    public ResponseEntity<List<OrderDto>> getOrdersByStatus(@PathVariable OrderStatus orderStatus){
+        log.info("Get Orders by status: {}", orderStatus);
+        return ResponseEntity.ok(orderService.getOrdersByStatus(orderStatus));
     }
 }

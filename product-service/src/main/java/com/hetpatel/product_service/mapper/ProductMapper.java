@@ -20,3 +20,11 @@ public interface ProductMapper {
     void updateProductFromDto(ProductDto productDto, @MappingTarget Product product);
 }
 
+//Get All Orders:
+//GET /orders - Retrieve all orders, possibly with pagination.
+//Get Orders by User:
+//GET /orders/user/{userId} - Retrieve all orders placed by a specific user.
+//Update Order Status:
+//PUT /orders/{orderId}/status - Update the status of an order (e.g., from PENDING to COMPLETED).
+//Cancel Order:
+//DELETE /orders/{orderId} or POST /orders/{orderId}/cancel - Cancel an order.

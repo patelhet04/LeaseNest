@@ -1,6 +1,5 @@
 package com.hetpatel.order_service.model;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +22,10 @@ public class Order {
 
     private Long productId;
     private Long userId;
+
+    private String leaseDuration;
+
+    private Long totalPrice;
 
     @CreatedDate
     private LocalDateTime createdAt;
