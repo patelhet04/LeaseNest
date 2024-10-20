@@ -27,13 +27,16 @@ public class Order {
 
     private Long totalPrice;
 
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
     @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private LocalDateTime expiresAt;
 
 }

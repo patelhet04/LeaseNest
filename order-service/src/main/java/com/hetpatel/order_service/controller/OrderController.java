@@ -45,4 +45,11 @@ public class OrderController {
         log.info("Get Orders by status: {}", orderStatus);
         return ResponseEntity.ok(orderService.getOrdersByStatus(orderStatus));
     }
+
+    @PutMapping("/{orderId}/cancel")
+    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId){
+        log.info("Cancelling order");
+        orderService.cancelOrder(orderId);
+        return ResponseEntity.ok("Order cancelled");
+    }
 }

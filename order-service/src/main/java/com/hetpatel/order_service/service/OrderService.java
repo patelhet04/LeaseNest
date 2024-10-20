@@ -9,8 +9,11 @@ import com.hetpatel.order_service.repo.OrderRepo;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.DataException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,6 +62,7 @@ public class OrderService {
             log.info("Creating new order");
             Order order = orderMapper.toEntity(orderDto);
             order.setStatus(OrderStatus.CREATED);
+            order.setExpiresAt(LocalDateTime.now().plusMinutes(20));
             Order savedOrder = orderRepo.save(order);
             return orderMapper.toDto(savedOrder);
         }
@@ -66,5 +70,25 @@ public class OrderService {
             log.error("Error while creating order",e);
             throw new RuntimeException("Error while creating order");
         }
+    }
+
+    public void cancelOrder(Long orderId){
+        log.info("Cancelling order: {}", orderId);
+        Order order = orderRepo.findById(orderId).orElseThrow(()-> new ResourceNotFoundException("Order not found"));
+        order.setStatus(OrderStatus.CANCELLED);
+    }
+
+
+    @Scheduled(fixedRate = 120000)
+    public void checkForExpiredOrders(){
+        log.info("Checking for expired orders");
+        LocalDateTime now = LocalDateTime.now();
+        List<OrderStatus> statuses = List.of(OrderStatus.CREATED, OrderStatus.PENDING);
+        List<Order> expiredOrders = orderRepo.findAllByStatusInAndExpiresAtBefore(statuses,now);
+
+        expiredOrders.forEach(order->{
+            order.setStatus(OrderStatus.EXPIRED);
+            orderRepo.save(order);
+        });
     }
 }
