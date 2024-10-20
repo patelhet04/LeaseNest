@@ -1,7 +1,11 @@
 
-# Product Leasing Platform
-
+# Product Leasing Platform 
 A microservices-based platform for leasing products like mobiles, laptops, and other electronic devices. The system is built using **Spring Boot** and follows best practices for building scalable microservices. It includes features like image handling for products.
+
+<a href="https://app.getpostman.com/run-collection/17506310-b931b750-ff0b-4aad-9a97-e001f8d1a936?action=collection%2Ffork&collection-url=entityId%3D17506310-b931b750-ff0b-4aad-9a97-e001f8d1a936%26entityType%3Dcollection%26workspaceId%3D53ff0ab4-0b9e-49cc-8c9c-11eb62d5e9b6" target="_blank">
+<img src="https://run.pstmn.io/button.svg" alt="Run in Postman">
+</a>
+
 
 ## Project Structure
 
